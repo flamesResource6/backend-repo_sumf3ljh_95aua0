@@ -11,8 +11,8 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, EmailStr
+from typing import Optional, List
 
 # Example schemas (replace with your own):
 
@@ -38,11 +38,20 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
+# Embrovia-specific schemas
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class Inquiry(BaseModel):
+    """
+    Customer inquiries and quote requests
+    Collection name: "inquiry"
+    """
+    name: str = Field(..., description="Customer name")
+    email: EmailStr = Field(..., description="Customer email")
+    company: Optional[str] = Field(None, description="Company or brand name")
+    whatsapp: Optional[str] = Field(None, description="WhatsApp number for quick replies")
+    service: str = Field(..., description="Requested service (digitizing, patches, vector, logo-redraw)")
+    message: Optional[str] = Field(None, description="Extra details provided by customer")
+    country: Optional[str] = Field(None, description="Customer country")
+    quantity: Optional[int] = Field(None, ge=1, description="Estimated quantity for patches/orders")
+    turnaround: Optional[str] = Field(None, description="Requested turnaround time")
+    file_names: Optional[List[str]] = Field(default=None, description="Uploaded file names associated with request")
